@@ -1,7 +1,7 @@
 # Unmute 🪞
 **Emotional Abuse Recognition & Recovery Companion**
 
-Vercel link: un-mute-main-r9lkyi30e-richa-vasavis-projects.vercel.app
+Vercel link: un-mute-main-cq22geney-richa-vasavis-projects.vercel.app
 
 *Built for the **AIC × Anthropic Hackathon** | Track: Neuroscience & Mental Health*
 
