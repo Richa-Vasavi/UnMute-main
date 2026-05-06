@@ -553,12 +553,10 @@ function scrollBot(id) {
 
 // ── CLAUDE API — uses artifact native access ──
 async function callClaude(system, messages, maxTokens) {
-  const resp = await fetch('https://api.anthropic.com/v1/messages', {
+  const resp = await fetch('/api/chat', {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json',
-      'anthropic-version': '2023-06-01',
-      'anthropic-dangerous-direct-browser-access': 'true'
+      'Content-Type': 'application/json'
     },
     body: JSON.stringify({
       model: 'claude-sonnet-4-20250514',
@@ -569,7 +567,7 @@ async function callClaude(system, messages, maxTokens) {
   });
   if (!resp.ok) {
     const e = await resp.json().catch(() => ({}));
-    throw new Error(e.error?.message || 'Error ' + resp.status);
+    throw new Error(e.error?.message || e.error || 'Error ' + resp.status);
   }
   const data = await resp.json();
   if (!data.content || !data.content[0]) throw new Error('Empty response from AI');
