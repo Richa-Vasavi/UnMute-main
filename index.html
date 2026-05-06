@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unmute — Emotional Abuse Recognition & Recovery</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Epilogue:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --ink:#0e0e0d;--ink2:#2a2a27;--ink3:#5a5a54;--ink4:#9a9a90;
+  --paper:#f7f4ee;--paper2:#eeebe2;--card:#ffffff;
+  --accent:#c8402a;--accent2:#e8b84b;
+  --sage:#3d6b4f;--sage-l:#e6f0e9;
+  --teal:#1a6b5e;--teal-l:#e2f0ed;
+  --border:rgba(14,14,13,0.1);--border2:rgba(14,14,13,0.18);
+  --r:12px;--sidebar:240px;
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'Epilogue',system-ui,sans-serif;
+}
+html,body{height:100%;overflow:hidden;font-family:var(--sans);background:var(--paper);color:#1a1a18;}
+.shell{display:flex;height:100vh;}
+.sidebar{width:var(--sidebar);background:var(--ink);display:flex;flex-direction:column;padding:1.5rem 1.1rem 1.2rem;flex-shrink:0;overflow:hidden;}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
+.view{display:none;flex:1;flex-direction:column;overflow:hidden;}
+.view.active{display:flex;}
+.brand-name{font-family:var(--serif);font-size:27px;color:#fff;font-weight:700;letter-spacing:-0.5px;line-height:1;}
+.brand-name em{color:var(--accent2);font-style:italic;}
+.brand-tag{font-size:9.5px;color:rgba(255,255,255,0.26);letter-spacing:1px;text-transform:uppercase;margin-top:5px;line-height:1.5;margin-bottom:0.2rem;}
+.nav-div{font-size:9px;color:rgba(255,255,255,0.2);text-transform:uppercase;letter-spacing:1.2px;margin:1.3rem 0 0.4rem 2px;}
+.nav-item{display:flex;align-items:center;gap:9px;padding:7px 9px;border-radius:7px;cursor:pointer;font-size:12.5px;color:rgba(255,255,255,0.55);transition:all 0.12s;margin-bottom:1px;user-select:none;border:1px solid transparent;}
+.nav-item:hover{color:rgba(255,255,255,0.85);background:rgba(255,255,255,0.07);}
+.nav-item.active{color:#fff;background:rgba(255,255,255,0.12);border-color:rgba(255,255,255,0.12);}
+.nav-item.active.av{background:rgba(200,64,42,0.25);border-color:rgba(200,64,42,0.35);color:#f5a090;}
+.nav-item.active.tv{background:rgba(26,107,94,0.3);border-color:rgba(26,107,94,0.4);color:#7ecabd;}
+.ni{font-size:13px;width:17px;text-align:center;flex-shrink:0;opacity:0.7;}
+.nav-item.active .ni{opacity:1;}
+.s-mission{margin-top:auto;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.07);border-radius:9px;padding:10px 11px;}
+.sm-label{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,0.25);margin-bottom:4px;}
+.sm-text{font-size:11px;color:rgba(255,255,255,0.42);line-height:1.6;}
+.sm-track{margin-top:7px;font-size:9px;color:var(--accent2);opacity:0.8;font-weight:600;letter-spacing:0.5px;}
+/* ONBOARDING */
+.onb{position:fixed;inset:0;z-index:100;background:rgba(14,14,13,0.88);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+.onb.gone{display:none;}
+.onb-card{background:var(--card);border-radius:18px;width:min(580px,94vw);max-height:90vh;overflow-y:auto;padding:2.2rem 2rem;}
+.onb-badge{display:inline-flex;align-items:center;gap:5px;background:var(--ink);color:var(--accent2);font-size:9.5px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:4px 11px;border-radius:20px;margin-bottom:1rem;}
+.onb-title{font-family:var(--serif);font-size:28px;font-weight:700;line-height:1.2;margin-bottom:0.7rem;color:#0e0e0d;}
+.onb-title em{color:var(--accent);font-style:italic;}
+.onb-sub{font-size:13px;color:#5a5a54;line-height:1.7;margin-bottom:1.4rem;}
+.onb-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:1.4rem;}
+.onb-pillar{background:var(--paper);border:1px solid var(--border);border-radius:9px;padding:11px 13px;}
+.op-ico{font-size:18px;margin-bottom:5px;}
+.op-title{font-size:12px;font-weight:600;margin-bottom:2px;color:#0e0e0d;}
+.op-desc{font-size:11px;color:#5a5a54;line-height:1.5;}
+.onb-ethics{background:var(--teal-l);border:1px solid rgba(26,107,94,0.18);border-radius:9px;padding:11px 13px;margin-bottom:1.3rem;font-size:12px;color:var(--teal);line-height:1.6;}
+.onb-ethics strong{display:block;margin-bottom:2px;font-size:12.5px;}
+.onb-btn{width:100%;background:var(--ink);color:#fff;border:none;border-radius:9px;padding:12px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:var(--sans);}
+.onb-btn:hover{background:var(--ink2);}
+/* CHAT */
+.chat-hdr{padding:0.85rem 1.3rem;border-bottom:1px solid var(--border);background:var(--card);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;gap:12px;}
+.ch-title{font-size:14px;font-weight:600;font-family:var(--serif);color:#0e0e0d;}
+.ch-sub{font-size:11px;color:#5a5a54;margin-top:2px;}
+.mode-tabs{display:flex;gap:3px;background:var(--paper2);padding:3px;border-radius:7px;flex-shrink:0;}
+.mtab{padding:5px 12px;border-radius:5px;font-size:12px;font-weight:500;cursor:pointer;border:none;background:transparent;color:#5a5a54;transition:all 0.12s;font-family:var(--sans);}
+.mtab.active{background:var(--card);color:#0e0e0d;box-shadow:0 1px 3px rgba(0,0,0,0.1);}
+.messages{flex:1;overflow-y:auto;padding:1.2rem;display:flex;flex-direction:column;gap:0.85rem;scroll-behavior:smooth;}
+.msg{display:flex;gap:8px;max-width:82%;}
+.msg.user{align-self:flex-end;flex-direction:row-reverse;}
+.ava{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;flex-shrink:0;margin-top:2px;}
+.msg.ai .ava{background:var(--ink);color:var(--accent2);}
+.msg.user .ava{background:var(--ink2);color:rgba(255,255,255,0.8);}
+.mav{background:rgba(200,64,42,0.15)!important;color:var(--accent)!important;}
+/* BUBBLES — all text explicitly dark */
+.bub{padding:10px 14px;border-radius:13px;font-size:13.5px;line-height:1.75;font-weight:300;}
+.msg.ai .bub{background:#ffffff;border:1px solid rgba(14,14,13,0.12);border-top-left-radius:3px;color:#1a1a18;}
+.msg.user .bub{background:var(--ink);color:#f0ede6;border-top-right-radius:3px;}
+.bub.rb{border-left:3px solid var(--accent);background:#fdf4f2;border-top-left-radius:3px;color:#1a1a18;}
+.bub.mal{border-left:3px solid var(--accent2);background:#fdf9ec;border-top-left-radius:3px;color:#1a1a18;}
+.bub.wb{background:var(--ink);color:#f0ede6;border:none;}
+.bub.mw{background:#1a1208;color:#d4c9a8;border:none;}
+.mbadge{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:5px;}
+.mba{color:var(--accent);}.mbam{color:#7a5800;}
+.tw{padding:0 1.2rem;flex-shrink:0;}
+.typing{display:none;align-items:center;gap:5px;padding:7px 11px;background:#fff;border:1px solid rgba(14,14,13,0.12);border-radius:13px;border-top-left-radius:3px;width:fit-content;margin-bottom:5px;}
+.typing.on{display:flex;}
+.tl{font-size:11px;color:#5a5a54;margin-left:3px;font-style:italic;}
+.dot{width:4px;height:4px;border-radius:50%;background:#9a9a90;animation:blink 1.3s infinite;}
+.dot:nth-child(2){animation-delay:.22s;}.dot:nth-child(3){animation-delay:.44s;}
+@keyframes blink{0%,60%,100%{opacity:.2;}30%{opacity:1;transform:translateY(-3px);}}
+.ia{padding:0.85rem 1.3rem;border-top:1px solid var(--border);background:var(--card);display:flex;gap:8px;align-items:flex-end;flex-shrink:0;}
+.ti{flex:1;border:1.5px solid var(--border2);border-radius:9px;padding:9px 12px;font-size:13.5px;font-family:var(--sans);resize:none;outline:none;color:#0e0e0d;background:var(--paper);min-height:40px;max-height:108px;transition:border 0.13s;line-height:1.55;font-weight:300;}
+.ti:focus{border-color:var(--ink);}
+.ti::placeholder{color:#9a9a90;}
+.sendbtn{background:var(--ink);color:#fff;border:none;border-radius:9px;padding:9px 17px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--sans);white-space:nowrap;}
+.sendbtn:hover{background:var(--ink2);}
+.sendbtn:disabled{opacity:0.38;cursor:not-allowed;}
+.sendbtn.ms{background:var(--accent);}
+.sendbtn.ms:hover{background:#a33220;}
+/* NUDGES */
+.nudge{display:flex;align-items:flex-start;gap:10px;border-radius:11px;padding:11px 13px;margin-top:4px;cursor:pointer;transition:transform 0.12s;max-width:82%;border:1.5px solid;animation:sli 0.32s ease;}
+.nudge:hover{transform:translateY(-2px);}
+.np{background:#fdf2f0;border-color:rgba(200,64,42,0.28);}
+.nh{background:#e6f0e9;border-color:rgba(61,107,79,0.28);}
+.ns{background:#fff8ec;border-color:rgba(200,120,0,0.32);border-left:4px solid #c87800;}
+.ndi{font-size:20px;flex-shrink:0;margin-top:1px;}
+.nl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:2px;}
+.np .nl{color:var(--accent);}.nh .nl{color:var(--sage);}.ns .nl{color:#8a5500;}
+.ntitle{font-size:13px;font-weight:600;color:#0e0e0d;margin-bottom:2px;}
+.ndesc{font-size:11.5px;color:#5a5a54;line-height:1.5;}
+.ncta{display:inline-block;margin-top:7px;font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px;color:#fff;}
+.np .ncta{background:var(--accent);}.nh .ncta{background:var(--sage);}.ns .ncta{background:#c87800;}
+@keyframes sli{from{opacity:0;transform:translateX(12px);}to{opacity:1;transform:translateX(0);}}
+/* SCROLL */
+.sv{flex:1;overflow-y:auto;padding:1.3rem 1.4rem;}
+.ph-title{font-family:var(--serif);font-size:24px;font-weight:700;margin-bottom:6px;color:#0e0e0d;}
+.ph-sub{font-size:13px;color:#5a5a54;line-height:1.65;max-width:540px;margin-bottom:1.3rem;}
+.slabel{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#9a9a90;margin:1.1rem 0 0.55rem;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:0.95rem 1.1rem;margin-bottom:9px;}
+.card.tap{cursor:pointer;transition:border-color 0.12s,transform 0.1s;}
+.card.tap:hover{border-color:#2a2a27;transform:translateY(-1px);}
+.ct{font-size:13.5px;font-weight:600;margin-bottom:3px;color:#0e0e0d;}
+.cb{font-size:12.5px;color:#5a5a54;line-height:1.6;}
+.fl{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:#5a5a54;margin-bottom:5px;}
+.field{width:100%;border:1.5px solid var(--border2);border-radius:8px;padding:8px 11px;font-size:13px;font-family:var(--sans);resize:vertical;min-height:78px;outline:none;color:#0e0e0d;background:var(--paper);transition:border 0.13s;line-height:1.6;font-weight:300;}
+.field:focus{border-color:var(--ink);}
+.field::placeholder{color:#9a9a90;}
+.ar{display:flex;align-items:center;gap:9px;margin-top:8px;}
+.db{background:var(--ink);color:#fff;border:none;border-radius:7px;padding:7px 15px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:var(--sans);}
+.db:hover{background:var(--ink2);}.db:disabled{opacity:0.38;cursor:not-allowed;}
+.lt{font-size:11.5px;color:#5a5a54;font-style:italic;display:none;}.lt.on{display:block;}
+.resbox{border-radius:var(--r);padding:0.95rem 1.1rem;font-size:13px;line-height:1.8;color:#1a1a18;display:none;margin-top:9px;border:1px solid var(--border);}
+.resbox.on{display:block;}
+.resbox.ra{border-left:3px solid var(--accent);background:#fdf4f2;}
+.rl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--accent);margin-bottom:6px;}
+.eb{display:none;margin-top:9px;padding-top:9px;border-top:1px solid var(--border);font-size:13px;line-height:1.75;color:#2a2a27;}
+.eb.on{display:block;}
+.sl-line{background:var(--paper2);border-left:3px solid var(--sage);border-radius:0 6px 6px 0;padding:7px 11px;margin:5px 0;font-style:italic;font-size:13px;color:#2a2a27;}
+.why{font-size:11.5px;color:#5a5a54;margin-top:5px;padding:6px 9px;background:var(--paper);border-radius:5px;}
+.pg{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.pp{background:var(--card);border:1px solid var(--border);border-radius:9px;padding:10px 12px;cursor:pointer;transition:all 0.12s;}
+.pp:hover{border-color:var(--accent);}
+.pp.ex{border-color:var(--accent);border-left:3px solid var(--accent);}
+.ppn{font-size:12.5px;font-weight:600;margin-bottom:3px;color:#0e0e0d;}
+.pph{font-size:11px;color:#5a5a54;line-height:1.4;margin-bottom:3px;}
+.ppb{display:inline-block;font-size:9px;font-weight:600;padding:2px 7px;border-radius:20px;background:rgba(200,64,42,0.1);color:var(--accent);text-transform:uppercase;}
+.ppd{display:none;font-size:11.5px;color:#2a2a27;line-height:1.6;margin-top:7px;padding-top:7px;border-top:1px solid var(--border);}
+.pp.ex .ppd{display:block;}
+/* MIRROR */
+.mhdr{background:linear-gradient(135deg,#1a0f08,#0e0e0d);color:#d4c9a8;padding:0.85rem 1.3rem;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,0.05);}
+.mht{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.mhtitle{font-family:var(--serif);font-size:15px;font-weight:700;margin-bottom:2px;color:#e8e0cc;}
+.mhsub{font-size:11px;opacity:0.55;line-height:1.5;}
+.mtabs{display:flex;gap:3px;background:rgba(255,255,255,0.06);padding:3px;border-radius:7px;}
+.mtab2{padding:5px 12px;border-radius:5px;font-size:12px;font-weight:500;cursor:pointer;border:none;background:transparent;color:rgba(212,201,168,0.5);font-family:var(--sans);}
+.mtab2.active{background:rgba(255,255,255,0.1);color:#d4c9a8;}
+.mbg{background:#f7f3ec;}
+/* HEALTH */
+.hs{display:flex;flex-direction:column;flex:1;overflow:hidden;}
+.hh{background:linear-gradient(135deg,#0b2a1e,#061a12);color:#a8d4be;padding:0;flex-shrink:0;}
+.hhi{display:flex;align-items:stretch;}
+.hhm{flex:1;padding:0.95rem 1.3rem;}
+.hht{font-family:var(--serif);font-size:16px;font-weight:700;color:#c8e8d4;margin-bottom:3px;}
+.hhs{font-size:11px;opacity:0.65;line-height:1.5;max-width:460px;}
+.htabs{display:flex;align-items:flex-end;padding:0 0.9rem 0 0;gap:1px;}
+.htab{padding:0.95rem 1rem;font-size:11.5px;font-weight:500;cursor:pointer;border:none;background:transparent;color:rgba(168,212,190,0.4);font-family:var(--sans);border-bottom:3px solid transparent;white-space:nowrap;}
+.htab.active{color:#c8e8d4;border-bottom:3px solid #6bb88a;}
+.htp{display:none;flex:1;overflow:hidden;flex-direction:column;}
+.htp.active{display:flex;}
+.cs{background:var(--accent);color:#fff;padding:7px 1.3rem;font-size:11.5px;font-weight:500;display:flex;align-items:center;gap:7px;flex-shrink:0;}
+.trb{flex:1;overflow-y:auto;padding:1.2rem 1.4rem;display:flex;flex-direction:column;gap:0.9rem;}
+.tri{background:#fff8f0;border:1px solid rgba(200,120,0,0.18);border-left:3px solid #c87800;border-radius:9px;padding:10px 13px;font-size:12.5px;line-height:1.6;color:#6a4000;}
+.tg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.tc{border-radius:10px;padding:12px;cursor:pointer;border:2px solid transparent;user-select:none;}
+.tc:hover{transform:translateY(-2px);}
+.tc.sel{box-shadow:0 0 0 3px rgba(0,0,0,0.1);}
+.tr2{background:#fdf0ee;color:#7a1c10;}.ta2{background:#fff8e8;color:#6a4400;}.tgr{background:#e8f2eb;color:#1e4a2a;}
+.tci{font-size:20px;margin-bottom:6px;}.tct{font-size:12px;font-weight:600;margin-bottom:2px;}.tcd{font-size:10.5px;opacity:0.72;line-height:1.4;}
+.tres{border-radius:10px;padding:13px 15px;font-size:13px;line-height:1.7;}
+.tres.cr2{background:var(--accent);color:#fff;}
+.tres.am2{background:#fff3cc;border:1px solid #e0a800;color:#5a3a00;}
+.tres.gr2{background:var(--teal-l);border:1px solid rgba(26,107,94,0.22);color:#0d3d33;}
+.trt{font-size:14px;font-weight:700;font-family:var(--serif);margin-bottom:7px;}
+.chb{flex:1;overflow-y:auto;padding:1.2rem 1.4rem;}
+.scard{background:var(--card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:1rem;}
+.sch{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
+.sct{font-size:13px;font-weight:600;color:#0e0e0d;}
+.aip{font-size:9px;font-weight:600;padding:2px 8px;border-radius:20px;background:var(--teal-l);color:var(--teal);text-transform:uppercase;}
+.scb{padding:13px 14px;}
+.dr{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:11px;}
+.dc{padding:5px 12px;border-radius:20px;border:1.5px solid var(--border2);font-size:11.5px;cursor:pointer;background:var(--paper);color:#0e0e0d;font-family:var(--sans);}
+.dc.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+.sg{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:11px;}
+.sc2{padding:5px 11px;border-radius:20px;border:1.5px solid var(--border2);font-size:11.5px;cursor:pointer;background:var(--paper);color:#0e0e0d;display:flex;align-items:center;gap:4px;font-family:var(--sans);}
+.sc2.active{border-color:var(--sage);background:var(--sage-l);color:var(--sage);}
+.sevr{margin-bottom:11px;}
+.svlr{display:flex;justify-content:space-between;font-size:10px;color:#5a5a54;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.5px;font-weight:600;}
+.svtr{height:5px;background:linear-gradient(to right,#3d6b4f,#c8b040,#c8402a);border-radius:3px;}
+.svi{width:100%;height:5px;-webkit-appearance:none;background:transparent;outline:none;cursor:pointer;}
+.svi::-webkit-slider-thumb{-webkit-appearance:none;width:17px;height:17px;border-radius:50%;background:#fff;border:2.5px solid var(--ink);cursor:pointer;}
+.svv{font-size:12.5px;font-weight:600;text-align:center;color:#0e0e0d;margin-top:4px;}
+.nf{width:100%;border:1.5px solid var(--border2);border-radius:7px;padding:7px 10px;font-size:12.5px;font-family:var(--sans);resize:vertical;min-height:50px;outline:none;color:#0e0e0d;background:var(--paper);line-height:1.5;font-weight:300;}
+.nf:focus{border-color:var(--ink);}
+.scf{padding:9px 14px;border-top:1px solid var(--border);background:var(--paper);display:flex;align-items:center;gap:9px;}
+.tb{background:var(--teal);color:#fff;border:none;border-radius:7px;padding:7px 16px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:var(--sans);}
+.tb:hover{background:#0f4a3e;}.tb:disabled{opacity:0.38;cursor:not-allowed;}
+.gb{background:transparent;color:#5a5a54;border:1.5px solid var(--border2);border-radius:7px;padding:7px 13px;font-size:12px;font-weight:500;cursor:pointer;font-family:var(--sans);}
+.gb:hover{border-color:var(--ink);color:#0e0e0d;}
+.arb2{border-radius:11px;overflow:hidden;margin-bottom:1rem;border:1px solid rgba(26,107,94,0.2);display:none;}
+.arh{background:var(--teal);color:#fff;padding:8px 13px;display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;}
+.arbd{padding:13px;background:#f4fbf8;font-size:13px;line-height:1.8;color:#1a1a18;}
+.disc{background:#fffbec;border:1px solid rgba(200,120,0,0.18);border-radius:8px;padding:8px 12px;font-size:11.5px;line-height:1.6;color:#6a4400;margin-bottom:1rem;display:flex;gap:7px;}
+.bmb{flex:1;overflow-y:auto;padding:1.2rem 1.4rem;}
+.bml{display:flex;gap:1.1rem;}
+.bmf{flex-shrink:0;width:185px;}
+.bmi{flex:1;min-width:0;}
+.bsvg{width:100%;}
+.bz{fill:#e4eee8;stroke:#8ab899;stroke-width:1.5;cursor:pointer;transition:fill 0.13s;}
+.bz:hover{fill:#c8dece;}.bz.bza{fill:#f5e0db;stroke:var(--accent);}
+.zi{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:11px 13px;margin-bottom:9px;display:none;}
+.zi.zs{display:block;}
+.zit{font-size:13.5px;font-weight:700;font-family:var(--serif);margin-bottom:4px;display:flex;align-items:center;gap:7px;flex-wrap:wrap;color:#0e0e0d;}
+.ut{font-size:9.5px;font-weight:600;padding:2px 8px;border-radius:20px;}
+.uh{background:rgba(200,64,42,0.1);color:var(--accent);}.um{background:rgba(200,180,0,0.1);color:#8a6800;}
+.zisy{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0;}
+.zis{font-size:11px;padding:2px 8px;border-radius:20px;background:rgba(200,64,42,0.07);color:var(--accent);font-weight:500;}
+.zib{font-size:12px;line-height:1.68;color:#2a2a27;}
+.lb{flex:1;overflow-y:auto;padding:1.2rem 1.4rem;}
+.le-empty{text-align:center;padding:2.5rem 1rem;color:#5a5a54;}
+.le-ei{font-size:36px;margin-bottom:8px;opacity:0.35;}
+.le{background:var(--card);border:1px solid var(--border);border-radius:9px;padding:9px 12px;margin-bottom:7px;display:flex;gap:8px;}
+.led{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+.leb{flex:1;font-size:12.5px;line-height:1.5;color:#0e0e0d;}
+.ledl{background:none;border:none;cursor:pointer;color:#9a9a90;font-size:16px;padding:0 2px;flex-shrink:0;}
+.dll{background:var(--sage);}.dlm{background:#c8b040;}.dlh{background:var(--accent);}
+.resb{flex:1;overflow-y:auto;padding:1.2rem 1.4rem;}
+.rst{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#9a9a90;margin:0.9rem 0 0.45rem;padding-bottom:4px;border-bottom:1px solid var(--border);}
+.rc{background:var(--card);border:1px solid var(--border);border-radius:9px;padding:9px 12px;margin-bottom:7px;display:flex;gap:9px;}
+.ri{width:34px;height:34px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+.rir{background:rgba(200,64,42,0.1);}.ria{background:rgba(200,160,0,0.1);}.rit{background:var(--teal-l);}.ris{background:var(--sage-l);}
+.rn{font-size:12.5px;font-weight:600;margin-bottom:2px;color:#0e0e0d;}
+.rd{font-size:11.5px;color:#5a5a54;line-height:1.5;margin-bottom:2px;}
+.rco{font-size:11.5px;font-weight:500;color:var(--teal);}
+.rtags{display:flex;flex-wrap:wrap;gap:3px;margin-top:4px;}
+.rt{font-size:9.5px;font-weight:500;padding:2px 6px;border-radius:20px;background:var(--sage-l);color:var(--sage);}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-thumb{background:var(--paper2);border-radius:4px;}
+@keyframes fi{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+</style>
+</head>
+<body>
+
+<div class="onb" id="onb">
+  <div class="onb-card">
+    <div class="onb-badge">🏆 AIC × Anthropic Hackathon · Neuroscience & Mental Health</div>
+    <div class="onb-title">You deserve to know<br><em>what's actually happening.</em></div>
+    <div class="onb-sub">Unmute helps people in emotionally abusive relationships recognise what's being done to them, understand how it's affecting their body and mind, and find words to protect themselves.</div>
+    <div class="onb-grid">
+      <div class="onb-pillar"><div class="op-ico">🔍</div><div class="op-title">Pattern recognition</div><div class="op-desc">AI identifies gaslighting, DARVO, love-bombing & 5 other clinically-named patterns in your situation.</div></div>
+      <div class="onb-pillar"><div class="op-ico">🫀</div><div class="op-title">Chronic stress detection</div><div class="op-desc">Tracks physical symptoms linked to long-term abuse — before you've named it yourself.</div></div>
+      <div class="onb-pillar"><div class="op-ico">🧠</div><div class="op-title">Therapist-brain AI</div><div class="op-desc">Deep silent analysis, then a short human response. Listens like a person — not a chatbot.</div></div>
+      <div class="onb-pillar"><div class="op-ico">🛡️</div><div class="op-title">Real-world scripts</div><div class="op-desc">Actual words to say. Grey rock, DARVO counters, boundary-setting — evidence-based & personalised.</div></div>
+    </div>
+    <div class="onb-ethics"><strong>Ethical commitments</strong>Never diagnoses. Never decides for you. Always recommends professional support. Nothing stored externally — data stays in your browser only.</div>
+    <button class="onb-btn" onclick="document.getElementById('onb').classList.add('gone')">Start talking →</button>
+  </div>
+</div>
+
+<div class="shell">
+  <div class="sidebar">
+    <div class="brand-name">Un<em>mute</em></div>
+    <div class="brand-tag">Emotional abuse recognition<br>& recovery companion</div>
+    <div class="nav-div">Talk</div>
+    <div class="nav-item active" onclick="go('chat',this)"><span class="ni">💬</span> Say it out loud</div>
+    <div class="nav-div">Understand</div>
+    <div class="nav-item" onclick="go('patterns',this)"><span class="ni">🔍</span> Name the pattern</div>
+    <div class="nav-item" onclick="go('scripts',this)"><span class="ni">🛡️</span> What to actually say</div>
+    <div class="nav-div">Know yourself</div>
+    <div class="nav-item av" onclick="go('mirror',this)"><span class="ni">🪞</span> Hold the mirror</div>
+    <div class="nav-item tv" onclick="go('health',this)"><span class="ni">🫀</span> Body keeping score</div>
+    <div class="s-mission">
+      <div class="sm-label">Mission</div>
+      <div class="sm-text">Help people recognise emotional abuse patterns and the chronic stress disorders they cause.</div>
+      <div class="sm-track">Neuroscience & Mental Health track</div>
+    </div>
+  </div>
+
+  <div class="main">
+
+    <!-- CHAT -->
+    <div class="view active" id="view-chat">
+      <div class="chat-hdr">
+        <div><div class="ch-title">Say it out loud</div><div class="ch-sub" id="chsub">Real talk — honest even when uncomfortable</div></div>
+        <div class="mode-tabs">
+          <button class="mtab active" onclick="setMode('reality',this)">Real talk</button>
+          <button class="mtab" onclick="setMode('support',this)">Just listen</button>
+        </div>
+      </div>
+      <div class="messages" id="msgs">
+        <div class="msg ai">
+          <div class="ava">U</div>
+          <div class="bub wb">Hey. Whatever happened — say it exactly as it is.<br><br>I won't tell you to "communicate better." I'll help you figure out what's <em>actually</em> going on.</div>
+        </div>
+      </div>
+      <div class="tw"><div class="typing" id="ctyp"><div class="dot"></div><div class="dot"></div><div class="dot"></div><span class="tl">thinking...</span></div></div>
+      <div class="ia">
+        <textarea class="ti" id="ci" placeholder="Start anywhere. It doesn't have to make sense yet." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat()}" oninput="autosize(this)"></textarea>
+        <button class="sendbtn" id="cbtn" onclick="sendChat()">Send</button>
+      </div>
+    </div>
+
+    <!-- PATTERNS -->
+    <div class="view" id="view-patterns">
+      <div class="sv">
+        <div class="ph-title">Name the pattern</div>
+        <div class="ph-sub">Describe what happened. The AI identifies what's going on using clinically recognised terms so you can research, understand, and act.</div>
+        <div class="card" style="margin-bottom:1.1rem;">
+          <div class="fl">Describe the situation</div>
+          <textarea class="field" id="pat-inp" placeholder="What was said. What happened next. How it ended. How you felt walking away."></textarea>
+          <div class="ar"><button class="db" id="pat-btn" onclick="doPattern()">Identify patterns</button><span class="lt" id="pat-lt">Analysing...</span></div>
+          <div class="resbox ra" id="pat-res"><div class="rl">Pattern analysis</div><div id="pat-txt"></div></div>
+        </div>
+        <div class="slabel">8 patterns to know — tap to expand</div>
+        <div class="pg">
+          <div class="pp" onclick="this.classList.toggle('ex')"><div class="ppn">Gaslighting</div><div class="pph">Made to doubt your own memory or sanity.</div><span class="ppb">Manipulation</span><div class="ppd">They deny events happened. You stop trusting yourself. Journalling exact words — immediately after — creates an external memory they cannot rewrite.</div></div>
+          <div class="pp" onclick="this.classList.toggle('ex')"><div class="ppn">DARVO</div><div class="pph">You raise a concern. They become the victim.</div><span class="ppb">Deflection</span><div class="ppd">Deny, Attack, Reverse Victim & Offender. You confront something real; you end up apologising. Counter: "I notice we've moved from what I raised to how I raised it."</div></div>
+          <div class="pp" onclick="this.classList.toggle('ex')"><div class="ppn">Love-bombing</div><div class="pph">Overwhelming affection — then withdrawal.</div><span class="ppb">Control cycle</span><div class="ppd">Intensity that feels intoxicating but doesn't match the relationship's actual safety. Creates dependency. It cycles — the warmth is real. So is what follows it.</div></div>
+          <div class="pp" onclick="this.classList.toggle('ex')"><div class="ppn">Intermittent reinforcement</div><div class="pph">You never know which version you'll get.</div><span class="ppb">Addiction pattern</span><div class="ppd">Random hot-and-cold creates anxious attachment — neurologically similar to addiction. That's why you can't stop thinking about them. It is not love.</div></div>
+          <div class="pp" onclick="this.classList.toggle('ex')"><div class="ppn">Triangulation</div><div class="pph">A third person brought in to create insecurity.</div><span class="ppb">Control</span><div class="ppd">Mentioning exes, comparing you to others. Creates competition where there should be security.</div></div>
+          <div class="pp" onclick="this.classList.toggle('ex')"><div class="ppn">Coercive control</div><div class="pph">Your freedom is quietly, slowly narrowed.</div><span class="ppb">Abuse pattern</span><div class="ppd">Isolating from friends or family, monitoring, controlling finances — often framed as caring. Legally recognised as abuse in many countries.</div></div>
+          <div class="pp" onclick="this.classList.toggle('ex')"><div class="ppn">Emotional drain</div><div class="pph">Every interaction leaves you exhausted.</div><span class="ppb">Chronic stress</span><div class="ppd">You walk on eggshells, monitor their mood, manage their emotions while yours are dismissed. Exhausting by design.</div></div>
+          <div class="pp" onclick="this.classList.toggle('ex')"><div class="ppn">Moving the goalposts</div><div class="pph">You do what they asked. It's never enough.</div><span class="ppb">Invalidation</span><div class="ppd">Each time you meet a stated expectation, it changes. Creates permanent inadequacy. The goal is not the goal — the goal is your constant striving.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <div class="view" id="view-scripts">
+      <div class="sv">
+        <div style="background:#7a3010;color:#fff;padding:8px 13px;border-radius:8px;font-size:12px;font-weight:500;margin-bottom:1rem;">⚠️ If you feel physically unsafe — contact emergency services or a crisis line immediately.</div>
+        <div class="ph-title">What to actually say</div>
+        <div class="ph-sub">Evidence-based responses that work. Tap any card to expand.</div>
+        <div class="slabel">Proven techniques</div>
+        <div class="card tap" onclick="this.querySelector('.eb').classList.toggle('on')"><div class="ct">Grey rock method</div><div class="cb">Become uninteresting. No emotion to feed on.</div><div class="eb"><div class="why">When you can't cut contact but need to protect your energy. Narcissistic behaviour feeds on your reaction — remove it, remove the reward.</div><div class="sl-line">"Mm. Okay."</div><div class="sl-line">"I see."</div><div class="sl-line">"Sure, whatever works for you."</div></div></div>
+        <div class="card tap" onclick="this.querySelector('.eb').classList.toggle('on')"><div class="ct">Broken record boundary</div><div class="cb">State it once. Repeat calmly. Never justify.</div><div class="eb"><div class="why">Each new reason becomes a new thing to argue with. Repeat the boundary identically when pushed.</div><div class="sl-line">"I won't be discussing this."</div><div class="sl-line">"That doesn't work for me."</div><div class="sl-line">"I've said what I have to say."</div></div></div>
+        <div class="card tap" onclick="this.querySelector('.eb').classList.toggle('on')"><div class="ct">DARVO counter</div><div class="cb">Name the flip. Hold your ground.</div><div class="eb"><div class="why">Naming the move disrupts it. You don't need to explain the term.</div><div class="sl-line">"I notice we've moved from what I raised to how I raised it."</div><div class="sl-line">"We can talk about how I expressed it — but the issue still stands."</div></div></div>
+        <div class="card tap" onclick="this.querySelector('.eb').classList.toggle('on')"><div class="ct">Disengagement without escalation</div><div class="cb">Leave a conversation going nowhere.</div><div class="eb"><div class="why">State it once. Don't ask permission. Don't explain further. Actually leave.</div><div class="sl-line">"I'm not able to have this conversation right now."</div><div class="sl-line">"I'm going to step away. We can come back to this."</div></div></div>
+        <div class="card tap" onclick="this.querySelector('.eb').classList.toggle('on')"><div class="ct">Counter-gaslighting anchor</div><div class="cb">Hold your ground when your reality is being rewritten.</div><div class="eb"><div class="why">You don't need to convince them. You need to not be convinced by them.</div><div class="sl-line">"I know what I heard."</div><div class="sl-line">"We may remember it differently. I'm clear on what happened for me."</div></div></div>
+        <div class="card" style="margin-top:1.1rem;">
+          <div class="ct" style="margin-bottom:5px;">Generate a script for your exact situation <span style="font-size:9px;font-weight:600;padding:2px 7px;border-radius:20px;background:var(--teal-l);color:var(--teal);margin-left:5px;text-transform:uppercase;">AI</span></div>
+          <div class="cb" style="margin-bottom:9px;">Describe the situation, how you usually respond, and what you want to happen.</div>
+          <textarea class="field" id="scr-inp" placeholder="e.g. When I bring up something they did, they say I'm too sensitive and bring up something I did months ago. I back down and end up apologising."></textarea>
+          <div class="ar"><button class="db" id="scr-btn" onclick="doScript()">Write my scripts</button><span class="lt" id="scr-lt">Writing...</span></div>
+          <div class="resbox ra" id="scr-res"><div class="rl">Your scripts</div><div id="scr-txt"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MIRROR -->
+    <div class="view" id="view-mirror">
+      <div class="mhdr">
+        <div class="mht">
+          <div><div class="mhtitle">Hold the mirror</div><div class="mhsub">Honesty runs both ways. Sometimes you need someone to hold it steady.</div></div>
+          <div class="mtabs">
+            <button class="mtab2 active" onclick="setMirTab('reflect',this)">What happened</button>
+            <button class="mtab2" onclick="setMirTab('selfcheck',this)">Was it me?</button>
+          </div>
+        </div>
+      </div>
+      <div class="messages mbg" id="mirmsgs">
+        <div class="msg ai"><div class="ava mav">U</div><div class="bub mw" id="mirwelc"><strong>This one takes guts.</strong><br><br><em>What happened</em> — tell me the whole story. I'll help you see the shape of it, including any parts you might not want to see.<br><br><em>Was it me?</em> — wondering if you might be the difficult one? That question alone says something real about you.</div></div>
+      </div>
+      <div class="tw"><div class="typing" id="mtyp"><div class="dot"></div><div class="dot"></div><div class="dot"></div><span class="tl">reflecting...</span></div></div>
+      <div class="ia" style="background:#f7f3ec;">
+        <textarea class="ti" id="miri" placeholder="Say exactly what happened. Don't edit yourself." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMirror()}" oninput="autosize(this)"></textarea>
+        <button class="sendbtn ms" id="mbtn" onclick="sendMirror()">Send</button>
+      </div>
+    </div>
+
+    <!-- HEALTH -->
+    <div class="view" id="view-health">
+      <div class="hs">
+        <div class="hh">
+          <div class="hhi">
+            <div class="hhm"><div class="hht">🫀 Your body keeping score</div><div class="hhs">Chronic emotional abuse leaves physical marks — often before you've named the abuse itself.</div></div>
+            <div class="htabs">
+              <button class="htab active" onclick="swHTab('triage',this)">Triage</button>
+              <button class="htab" onclick="swHTab('checker',this)">Symptom check</button>
+              <button class="htab" onclick="swHTab('bodymap',this)">Body map</button>
+              <button class="htab" onclick="swHTab('log',this)">My log</button>
+              <button class="htab" onclick="swHTab('resources',this)">Resources</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="htp active" id="htp-triage">
+          <div class="cs">⚡ Emergency: 112 (India) · 911 (US) · 999 (UK) · Mental health: iCall 9152987821</div>
+          <div class="trb">
+            <div class="tri"><strong>Not a diagnosis.</strong> Use this to understand whether your symptoms need urgent care, a doctor's appointment, or careful monitoring.</div>
+            <div class="slabel">How are you right now?</div>
+            <div class="tg">
+              <div class="tc tr2" onclick="selTriage(this,'critical')"><div class="tci">🚨</div><div class="tct">I feel unsafe</div><div class="tcd">Thoughts of harm or physically in danger right now</div></div>
+              <div class="tc tr2" onclick="selTriage(this,'physical')"><div class="tci">⚡</div><div class="tct">Severe physical symptoms</div><div class="tcd">Chest pain, can't breathe, collapse, or cannot function</div></div>
+              <div class="tc ta2" onclick="selTriage(this,'urgent')"><div class="tci">⚠️</div><div class="tct">Daily life disrupted</div><div class="tcd">Sleep, eating, work affected — not in immediate danger</div></div>
+              <div class="tc ta2" onclick="selTriage(this,'mental')"><div class="tci">🌀</div><div class="tct">Mental health declining</div><div class="tcd">Anxiety, depression, dissociation worsening over weeks</div></div>
+              <div class="tc tgr" onclick="selTriage(this,'watching')"><div class="tci">👁️</div><div class="tct">Noticing early signs</div><div class="tcd">Fatigue, headaches, mood changes — worth tracking</div></div>
+              <div class="tc tgr" onclick="selTriage(this,'info')"><div class="tci">📖</div><div class="tct">Learning</div><div class="tcd">I want to understand the abuse-body connection</div></div>
+            </div>
+            <div id="tr-result"></div>
+          </div>
+        </div>
+
+        <div class="htp" id="htp-checker">
+          <div class="chb">
+            <div class="disc"><span style="font-size:15px;flex-shrink:0;">⚠️</span><span>Not a medical diagnosis. This identifies stress-response patterns linked to emotional abuse. Always see a doctor for persistent symptoms.</span></div>
+            <div class="scard">
+              <div class="sch"><div class="sct">Build your symptom profile</div><span class="aip">AI analysis</span></div>
+              <div class="scb">
+                <div class="fl">How long?</div>
+                <div class="dr"><div class="dc" onclick="selDur(this,'days')">Days</div><div class="dc" onclick="selDur(this,'weeks')">Weeks</div><div class="dc active" onclick="selDur(this,'months')">Months</div><div class="dc" onclick="selDur(this,'years')">Over a year</div></div>
+                <div class="fl">Which areas?</div>
+                <div class="sg">
+                  <div class="sc2" onclick="togSym(this,'sleep')">😴 Sleep</div>
+                  <div class="sc2" onclick="togSym(this,'head')">🤕 Head & jaw</div>
+                  <div class="sc2" onclick="togSym(this,'gut')">🫁 Digestion</div>
+                  <div class="sc2" onclick="togSym(this,'energy')">⚡ Fatigue</div>
+                  <div class="sc2" onclick="togSym(this,'anxiety')">😰 Anxiety</div>
+                  <div class="sc2" onclick="togSym(this,'mood')">🌧️ Low mood</div>
+                  <div class="sc2" onclick="togSym(this,'memory')">🧠 Memory & focus</div>
+                  <div class="sc2" onclick="togSym(this,'body')">💪 Muscle pain</div>
+                  <div class="sc2" onclick="togSym(this,'immune')">🛡️ Immune system</div>
+                  <div class="sc2" onclick="togSym(this,'dissoc')">🌫️ Dissociation</div>
+                  <div class="sc2" onclick="togSym(this,'appetite')">🍽️ Appetite</div>
+                  <div class="sc2" onclick="togSym(this,'hyperv')">👀 Hypervigilance</div>
+                </div>
+                <div class="fl">Severity</div>
+                <div class="sevr">
+                  <div class="svlr"><span>Mild</span><span id="svv">5 / 10</span><span>Severe</span></div>
+                  <div class="svtr"><input type="range" class="svi" id="svsli" min="1" max="10" value="5" oninput="updSev(this.value)"></div>
+                </div>
+                <div class="fl" style="margin-top:5px;">Anything else?</div>
+                <textarea class="nf" id="sym-notes" placeholder="e.g. stomach knots before phone calls, flinching at sounds…"></textarea>
+              </div>
+              <div class="scf">
+                <button class="tb" id="chkbtn" onclick="runCheck()">Analyse</button>
+                <button class="gb" onclick="saveLog()">Save to log</button>
+                <span class="lt" id="chk-lt">Analysing…</span>
+              </div>
+            </div>
+            <div class="arb2" id="ai-rep"><div class="arh">🫀 Your health signal report</div><div class="arbd" id="ai-rep-body"></div></div>
+          </div>
+        </div>
+
+        <div class="htp" id="htp-bodymap">
+          <div class="bmb">
+            <div style="font-size:13px;color:#5a5a54;margin-bottom:1rem;">Tap a body zone to understand how chronic stress and emotional abuse affect that area.</div>
+            <div class="bml">
+              <div class="bmf">
+                <svg class="bsvg" viewBox="0 0 160 400" xmlns="http://www.w3.org/2000/svg">
+                  <ellipse cx="80" cy="38" rx="28" ry="32" class="bz" onclick="showZone('head')" id="bz-head"/>
+                  <rect x="68" y="68" width="24" height="18" rx="4" class="bz" onclick="showZone('jaw')" id="bz-jaw"/>
+                  <ellipse cx="38" cy="90" rx="22" ry="10" class="bz" onclick="showZone('shoulders')" id="bz-shoulders"/>
+                  <ellipse cx="122" cy="90" rx="22" ry="10" class="bz" onclick="showZone('shoulders')"/>
+                  <rect x="52" y="86" width="56" height="50" rx="8" class="bz" onclick="showZone('chest')" id="bz-chest"/>
+                  <rect x="54" y="140" width="52" height="48" rx="8" class="bz" onclick="showZone('gut')" id="bz-gut"/>
+                  <rect x="18" y="88" width="18" height="80" rx="8" class="bz" onclick="showZone('muscles')" id="bz-muscles"/>
+                  <rect x="124" y="88" width="18" height="80" rx="8" class="bz" onclick="showZone('muscles')"/>
+                  <rect x="54" y="190" width="52" height="60" rx="8" class="bz" onclick="showZone('immune')" id="bz-immune"/>
+                  <rect x="55" y="252" width="22" height="100" rx="8" class="bz" onclick="showZone('energy')" id="bz-energy"/>
+                  <rect x="83" y="252" width="22" height="100" rx="8" class="bz" onclick="showZone('energy')"/>
+                  <text x="80" y="37" text-anchor="middle" font-size="9" fill="#3d6b4f" font-family="Epilogue,sans-serif" pointer-events="none">Head</text>
+                  <text x="80" y="80" text-anchor="middle" font-size="8" fill="#3d6b4f" font-family="Epilogue,sans-serif" pointer-events="none">Jaw</text>
+                  <text x="80" y="114" text-anchor="middle" font-size="9" fill="#3d6b4f" font-family="Epilogue,sans-serif" pointer-events="none">Chest</text>
+                  <text x="80" y="167" text-anchor="middle" font-size="9" fill="#3d6b4f" font-family="Epilogue,sans-serif" pointer-events="none">Gut</text>
+                  <text x="27" y="135" text-anchor="middle" font-size="8" fill="#3d6b4f" font-family="Epilogue,sans-serif" pointer-events="none">Arms</text>
+                  <text x="80" y="218" text-anchor="middle" font-size="9" fill="#3d6b4f" font-family="Epilogue,sans-serif" pointer-events="none">Pelvis</text>
+                  <text x="80" y="308" text-anchor="middle" font-size="9" fill="#3d6b4f" font-family="Epilogue,sans-serif" pointer-events="none">Legs</text>
+                </svg>
+              </div>
+              <div class="bmi">
+                <div class="zi zs" id="zi-default"><div class="zit">👆 Tap a zone</div><div class="zib">Select any area to understand how chronic stress and emotional abuse affect it.</div></div>
+                <div class="zi" id="zi-head"><div class="zit">🤕 Head & brain <span class="ut uh">High urgency</span></div><div class="zisy"><span class="zis">Tension headaches</span><span class="zis">Brain fog</span><span class="zis">Memory loss</span><span class="zis">Migraines</span></div><div class="zib">Chronic cortisol literally shrinks the hippocampus, impairing memory and learning. Gaslighting compounds this by attacking your trust in your own recollection.<br><br><strong>What helps:</strong> Journalling as an external memory. Most cognitive symptoms reverse after the stressor is removed.<br><br><strong>See a doctor if:</strong> sudden severe headache, vision changes, or worsening cognition over weeks.</div></div>
+                <div class="zi" id="zi-jaw"><div class="zit">😬 Jaw & neck <span class="ut um">Moderate</span></div><div class="zisy"><span class="zis">TMJ disorder</span><span class="zis">Bruxism (grinding)</span><span class="zis">Neck stiffness</span></div><div class="zib">The jaw and neck are primary stress-storage zones. Nocturnal teeth grinding is strongly linked to hypervigilance — the body stays on guard during sleep.<br><br><strong>What helps:</strong> Dental night guard for bruxism. Physiotherapy for TMJ.<br><br><strong>See a doctor if:</strong> jaw pain limits opening/closing, or persistent clicking sounds.</div></div>
+                <div class="zi" id="zi-chest"><div class="zit">💔 Chest & heart <span class="ut uh">See a doctor</span></div><div class="zisy"><span class="zis">Palpitations</span><span class="zis">Chest tightness</span><span class="zis">High blood pressure</span></div><div class="zib">Chronic stress keeps the sympathetic nervous system activated continuously. Stress cardiomyopathy is a real, documented medical condition — not a metaphor.<br><br><strong>See a doctor if:</strong> any chest pain, palpitations over a few minutes, or breathlessness — rule out cardiac causes first, always.</div></div>
+                <div class="zi" id="zi-gut"><div class="zit">🫁 Digestive system <span class="ut uh">High urgency</span></div><div class="zisy"><span class="zis">IBS symptoms</span><span class="zis">Nausea before conflict</span><span class="zis">Stomach knots</span></div><div class="zib">The gut-brain axis responds directly to cortisol. Many people are treated for IBS for years without the emotional cause being identified.<br><br><strong>See a doctor if:</strong> blood in stool or significant unintentional weight loss.</div></div>
+                <div class="zi" id="zi-muscles"><div class="zit">💪 Muscles & body <span class="ut um">Moderate</span></div><div class="zisy"><span class="zis">Chronic fatigue</span><span class="zis">Widespread pain</span><span class="zis">Flinching at sounds</span></div><div class="zib">Fibromyalgia has a documented association with trauma. The exaggerated startle response is a recognised trauma symptom — the nervous system is permanently on high alert.<br><br><strong>What helps:</strong> Gentle movement. Somatic therapy. EMDR has strong evidence for physical trauma symptoms.</div></div>
+                <div class="zi" id="zi-immune"><div class="zit">🛡️ Immune system <span class="ut um">Track over time</span></div><div class="zisy"><span class="zis">Frequent illness</span><span class="zis">Slow healing</span><span class="zis">Autoimmune flares</span></div><div class="zib">Elevated cortisol directly suppresses immune function. Prolonged stress can trigger or worsen autoimmune conditions — lupus, RA, psoriasis, thyroid disorders.<br><br><strong>See a doctor if:</strong> 3+ infections in 6 months, or suspected autoimmune symptoms.</div></div>
+                <div class="zi" id="zi-energy"><div class="zit">⚡ Nervous system <span class="ut uh">Seek support</span></div><div class="zisy"><span class="zis">Profound exhaustion</span><span class="zis">Dissociation</span><span class="zis">Emotional numbness</span></div><div class="zib">After sustained high-alert states, the nervous system can enter a shutdown freeze response. Emotional numbness and dissociation are recognised trauma responses — not weakness.<br><br><strong>What helps:</strong> EMDR, somatic therapy, or trauma-focused CBT. Professional support is needed.</div></div>
+                <div class="zi" id="zi-shoulders"><div class="zit">🏋️ Shoulders & back <span class="ut um">Moderate</span></div><div class="zisy"><span class="zis">Shoulder tension</span><span class="zis">Upper back pain</span><span class="zis">Postural collapse</span></div><div class="zib">Chronic protective posturing — hunching, shoulders raised — is a documented trauma response. It creates muscle imbalances and nerve compression over time.<br><br><strong>What helps:</strong> Physiotherapy and postural correction. Somatic therapy to release the protective pattern.</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="htp" id="htp-log">
+          <div class="lb">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.9rem;">
+              <div><div class="ph-title" style="font-size:19px;">My symptom log</div><div style="font-size:12px;color:#5a5a54;">A record for yourself — and evidence for your doctor.</div></div>
+              <button class="gb" onclick="clearLog()">Clear</button>
+            </div>
+            <div id="log-entries"><div class="le-empty"><div class="le-ei">📋</div><div style="font-size:13px;">No entries yet.<br><span style="font-size:11.5px;">Use Symptom check and tap Save to log.</span></div></div></div>
+          </div>
+        </div>
+
+        <div class="htp" id="htp-resources">
+          <div class="resb">
+            <div style="background:var(--accent);color:#fff;padding:8px 13px;border-radius:8px;font-size:12px;font-weight:500;margin-bottom:1rem;">⚠️ In immediate danger — call emergency services now. Resources below are for ongoing support.</div>
+            <div class="rst">Crisis & immediate support</div>
+            <div class="rc"><div class="ri rir">🆘</div><div><div class="rn">iCall (India)</div><div class="rd">TISS psychosocial helpline — free counselling for distress, trauma, relationship abuse.</div><div class="rco">📞 9152987821 · Mon–Sat 8am–10pm</div><div class="rtags"><span class="rt">India</span><span class="rt">Free</span><span class="rt">Counselling</span></div></div></div>
+            <div class="rc"><div class="ri rir">📞</div><div><div class="rn">Vandrevala Foundation</div><div class="rd">24/7 mental health crisis helpline for India.</div><div class="rco">📞 1860-2662-345 · 24/7</div><div class="rtags"><span class="rt">India</span><span class="rt">24/7</span><span class="rt">Crisis</span></div></div></div>
+            <div class="rc"><div class="ri rir">🌍</div><div><div class="rn">Global crisis lines</div><div class="rd">Samaritans UK: 116 123 · Crisis Text Line US: text HOME to 741741 · Lifeline AUS: 13 11 14</div><div class="rtags"><span class="rt">Global</span><span class="rt">24/7</span></div></div></div>
+            <div class="rst">Domestic & emotional abuse (India)</div>
+            <div class="rc"><div class="ri ria">🏠</div><div><div class="rn">NCW Helpline</div><div class="rd">National Commission for Women — domestic violence and abuse support.</div><div class="rco">📞 7827170170 · 24/7</div><div class="rtags"><span class="rt">India</span><span class="rt">Women</span><span class="rt">Free</span></div></div></div>
+            <div class="rc"><div class="ri ria">⚖️</div><div><div class="rn">One Stop Centres / Sakhi</div><div class="rd">Medical, legal, psychological support and shelter for abuse survivors.</div><div class="rco">📞 181 (Women Helpline)</div><div class="rtags"><span class="rt">India</span><span class="rt">Medical</span><span class="rt">Legal</span></div></div></div>
+            <div class="rst">Therapy that works for trauma</div>
+            <div class="rc"><div class="ri ris">🧠</div><div><div class="rn">Evidence-based approaches</div><div class="rd">EMDR, Somatic therapy, Trauma-focused CBT, Internal Family Systems (IFS). Ask specifically for these.</div><div class="rtags"><span class="rt">EMDR</span><span class="rt">Somatic</span><span class="rt">TF-CBT</span><span class="rt">IFS</span></div></div></div>
+            <div class="rc"><div class="ri ris">💻</div><div><div class="rn">Online therapy (India)</div><div class="rd">YourDOST, Wysa, Amaha (InnerHour), Lissun — licensed therapists, trauma-informed.</div><div class="rco">🌐 yourdost.com · wysa.com · amahahealth.com</div><div class="rtags"><span class="rt">India</span><span class="rt">Online</span><span class="rt">Affordable</span></div></div></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+'use strict';
+
+let chatMode = 'reality', mirrorTab = 'reflect';
+let chatHistory = [], mirrorHistory = [];
+let shownPatterns = new Set(), healthDone = false, severeDone = false;
+let selDuration = 'months', selSymptoms = [], sevVal = 5;
+let symLog = JSON.parse(localStorage.getItem('um_log') || '[]');
+
+function go(v, el) {
+  document.querySelectorAll('.view').forEach(x => x.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
+  document.getElementById('view-' + v).classList.add('active');
+  el.classList.add('active');
+}
+
+function autosize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 108) + 'px'; }
+
+function nl2br(s) {
+  return s.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+}
+
+function scrollBot(id) {
+  const el = document.getElementById(id);
+  setTimeout(() => el.scrollTop = el.scrollHeight, 60);
+}
+
+// ── CLAUDE API — uses artifact native access ──
+async function callClaude(system, messages, maxTokens) {
+  const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: maxTokens || 500,
+      system: system,
+      messages: messages
+    })
+  });
+  if (!resp.ok) {
+    const e = await resp.json().catch(() => ({}));
+    throw new Error(e.error?.message || 'Error ' + resp.status);
+  }
+  const data = await resp.json();
+  if (!data.content || !data.content[0]) throw new Error('Empty response from AI');
+  return data.content[0].text || '';
+}
+
+// ── ADD MESSAGE ──
+function addMsg(containerId, text, role, style) {
+  const c = document.getElementById(containerId);
+  const wrap = document.createElement('div');
+  wrap.className = 'msg ' + (role === 'user' ? 'user' : 'ai');
+  if (role !== 'user') wrap.style.maxWidth = '82%';
+
+  const av = document.createElement('div');
+  av.className = 'ava' + (containerId === 'mirmsgs' && role !== 'user' ? ' mav' : '');
+  av.textContent = role === 'user' ? 'You' : 'U';
+
+  const bub = document.createElement('div');
+  bub.className = 'bub' + (style ? ' ' + style : '');
+
+  if (style === 'rb') {
+    const b = document.createElement('div');
+    b.className = 'mbadge mba';
+    b.textContent = 'Real talk';
+    bub.appendChild(b);
+  }
+  if (style === 'mal') {
+    const b = document.createElement('div');
+    b.className = 'mbadge mbam';
+    b.textContent = 'Something to notice';
+    bub.appendChild(b);
+  }
+
+  const t = document.createElement('div');
+  t.style.color = '#1a1a18';
+  if (style === 'wb' || role === 'user') t.style.color = '';
+  t.innerHTML = nl2br(text);
+  bub.appendChild(t);
+
+  wrap.appendChild(av);
+  wrap.appendChild(bub);
+  c.appendChild(wrap);
+  scrollBot(containerId);
+}
+
+function addErr(cid, msg) { addMsg(cid, '⚠️ ' + msg, 'ai', ''); }
+
+// ── NUDGES ──
+const PAT_DATA = {
+  gaslighting: { icon: '🌀', title: 'This sounds like gaslighting', desc: 'Being made to doubt your own memory and reality has a clinical name. Naming it is the first step to protecting yourself.', cta: 'Understand gaslighting →' },
+  darvo: { icon: '🔄', title: 'This sounds like DARVO', desc: "You raise something real and end up apologising. That's a documented manipulation tactic.", cta: 'Learn about DARVO →' },
+  lovebombing: { icon: '💣', title: 'This sounds like love-bombing', desc: 'Overwhelming affection followed by withdrawal. The cycle creates powerful attachment that is hard to break.', cta: 'Understand love-bombing →' },
+  intermittent: { icon: '🎰', title: 'This looks like intermittent reinforcement', desc: "The hot-and-cold pattern is neurologically similar to addiction. That's why you can't stop thinking about them.", cta: 'Understand this pattern →' },
+  triangulation: { icon: '🔺', title: 'This sounds like triangulation', desc: 'Bringing in a third person to create insecurity is a control tactic, not a relationship dynamic.', cta: 'Understand triangulation →' },
+  coercive: { icon: '⛓️', title: 'This sounds like coercive control', desc: 'Isolation, monitoring, control — often framed as caring. Legally recognised as abuse in many countries.', cta: 'Understand coercive control →' },
+  drain: { icon: '🪫', title: 'This looks like emotional drain', desc: 'Walking on eggshells, exhaustion after every interaction, never knowing what mood they will be in.', cta: 'Understand this pattern →' },
+  general: { icon: '🔍', title: 'Several patterns in what you are describing', desc: 'There are clinical names for what you are experiencing. Naming them gives you something to research and act on.', cta: 'See the pattern library →' }
+};
+
+function addPatNudge(key) {
+  const d = PAT_DATA[key] || PAT_DATA.general;
+  const c = document.getElementById('msgs');
+  const card = document.createElement('div');
+  card.className = 'nudge np';
+  card.onclick = () => goPat(key);
+  card.innerHTML = `<div class="ndi">${d.icon}</div><div><div class="nl">Pattern identified</div><div class="ntitle">${d.title}</div><div class="ndesc">${d.desc}</div><span class="ncta">${d.cta}</span></div>`;
+  c.appendChild(card);
+  scrollBot('msgs');
+}
+
+function addSevNudge() {
+  const c = document.getElementById('msgs');
+  const card = document.createElement('div');
+  card.className = 'nudge ns';
+  card.onclick = () => goHealth();
+  card.innerHTML = `<div class="ndi">🚨</div><div><div class="nl">Important — please read</div><div class="ntitle">This sounds like it has been going on a long time</div><div class="ndesc">Years of emotional abuse cause real, measurable physical and neurological harm. The Health section can help you understand what may be happening to your body.</div><span class="ncta">Check your health signals →</span></div>`;
+  c.appendChild(card);
+  scrollBot('msgs');
+}
+
+function addHealthNudge() {
+  const c = document.getElementById('msgs');
+  const card = document.createElement('div');
+  card.className = 'nudge nh';
+  card.onclick = () => goHealth();
+  card.innerHTML = `<div class="ndi">🫀</div><div><div class="nl">Your body matters too</div><div class="ntitle">Physical symptoms and emotional abuse are connected</div><div class="ndesc">Chronic stress leaves real physical marks — sleep, headaches, gut issues, exhaustion.</div><span class="ncta">See health signals →</span></div>`;
+  c.appendChild(card);
+  scrollBot('msgs');
+}
+
+function goPat(key) {
+  const items = document.querySelectorAll('.nav-item');
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('view-patterns').classList.add('active');
+  items[1].classList.add('active');
+  const last = chatHistory.filter(m => m.role === 'user').slice(-4).map(m => m.content).join(' / ');
+  const fi = document.getElementById('pat-inp');
+  if (fi && last) fi.value = last;
+  setTimeout(() => {
+    document.querySelectorAll('.pp').forEach(p => {
+      const nm = p.querySelector('.ppn');
+      if (nm && nm.textContent.toLowerCase().includes(key.substring(0, 6))) {
+        p.classList.add('ex');
+        p.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    });
+  }, 300);
+}
+
+function goHealth() {
+  const items = document.querySelectorAll('.nav-item');
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('view-health').classList.add('active');
+  items[4].classList.add('active');
+}
+
+// ── THERAPIST BRAIN ──
+const BRAIN = `You are a silent clinical observer. Read the full conversation carefully. Output ONLY a raw JSON object — no markdown fences, no text before or after, just the JSON:
+{"emotion":"the real core emotion driving this","intensity":"low|medium|high|crisis","what_they_need":"emotional state they need right now — not advice","ready":"not yet|warming up|yes","pattern":"null or one of: gaslighting|darvo|lovebombing|intermittent|triangulation|coercive|drain|general","pconf":"low|medium|high","user_difficult":false,"user_sig":"null or brief signal","longterm":false,"lt_signals":"null or what signals this","phys_syms":false,"defensive":false,"loop":false,"unsaid":"what they are circling but not saying","crack_q":"the single question that would open something","dont_say":"one thing that would shut them down"}`;
+
+async function getBrain(hist) {
+  try {
+    const raw = await callClaude(BRAIN, hist, 600);
+    const cleaned = raw.trim().replace(/^```[\w]*\n?/, '').replace(/```$/, '').trim();
+    return JSON.parse(cleaned);
+  } catch (e) {
+    return null;
+  }
+}
+
+// ── VOICE SYSTEMS ──
+const VOICE = `You are Unmute — the person in this person's life who tells them the truth in a way that feels like being understood, not lectured.
+
+Not a chatbot. You don't perform empathy. You say the thing everyone else dances around.
+
+RULES — non-negotiable:
+1. Maximum 3 sentences. Count them. Stop after the third.
+2. Never start with "I"
+3. No bullet points, no lists, no headers — just plain sentences
+4. Name the feeling they have not named yet — this is more powerful than anything else
+5. If they are defensive: one sentence of understanding, then one question. Nothing else.
+6. End with a question almost always — the one they have been afraid to ask themselves
+7. Never say "I hear you" or "your feelings are valid" — these phrases mean nothing
+
+The private notes below tell you what is really going on. Speak from knowing — not from reading a file.`;
+
+const VSUPPORT = `You are Unmute in gentle mode — the friend who sits with someone in the dark without turning the lights on immediately.
+
+You do not fix. You witness. You say the thing that makes someone exhale.
+
+RULES — non-negotiable:
+1. Maximum 3 sentences. Count them. Stop.
+2. Never start with "I"
+3. No lists, no headers — just words
+4. Name the feeling under the feeling
+5. Ask one question that opens something
+
+Speak from the notes — not like you read a file.`;
+
+const VMIRROR = `You are Unmute in Mirror mode. You love this person enough to hold the mirror steady even when they are flinching.
+
+No shame. No lecture. But you do not look away.
+
+RULES: Maximum 3 sentences. Say what you see. Ask one question. Nothing more.`;
+
+function buildCtx(n) {
+  if (!n) return '';
+  const pd = n.pattern && n.pconf !== 'low' ? n.pattern + ' (' + n.pconf + ' confidence)' : 'none clear yet';
+  const ud = n.user_difficult ? 'possibly — ' + n.user_sig : 'no';
+  return `\n\n[PRIVATE NOTES — you know this without being told]:
+- Real emotion: ${n.emotion} (${n.intensity} intensity)
+- What they need to feel right now: ${n.what_they_need}
+- Ready for truth: ${n.ready}
+- Defensive right now: ${n.defensive ? 'YES — one sentence of understanding then one question and stop' : 'no'}
+- Pattern you are seeing: ${pd}
+- Long-term situation: ${n.longterm ? 'YES — ' + n.lt_signals : 'no'}
+- May be the difficult one: ${ud}
+- Stuck in a loop: ${n.loop ? 'YES — gently name the loop' : 'no'}
+- The thing they have not said: ${n.unsaid || 'unclear'}
+- Question that would crack it open: ${n.crack_q}
+- Do NOT say or do: ${n.dont_say}`;
+}
+
+// ── SEND CHAT ──
+async function sendChat() {
+  const inp = document.getElementById('ci');
+  const msg = inp.value.trim();
+  if (!msg) return;
+
+  inp.value = '';
+  inp.style.height = 'auto';
+  addMsg('msgs', msg, 'user');
+  chatHistory.push({ role: 'user', content: msg });
+
+  const btn = document.getElementById('cbtn');
+  btn.disabled = true;
+  document.getElementById('ctyp').classList.add('on');
+  scrollBot('msgs');
+
+  try {
+    const notes = await getBrain(chatHistory);
+    const ctx = buildCtx(notes);
+    const system = (chatMode === 'reality' ? VOICE : VSUPPORT) + ctx;
+    const raw = await callClaude(system, chatHistory, 320);
+    const reply = raw.trim() || 'Something got in the way — try again.';
+
+    chatHistory.push({ role: 'assistant', content: reply });
+    document.getElementById('ctyp').classList.remove('on');
+    addMsg('msgs', reply, 'ai', chatMode === 'reality' ? 'rb' : '');
+
+    if (notes) {
+      const pk = notes.pattern && notes.pconf !== 'low' ? notes.pattern : null;
+      if (pk && !shownPatterns.has(pk) && shownPatterns.size < 2) {
+        shownPatterns.add(pk);
+        setTimeout(() => addPatNudge(pk), 800);
+      }
+      if (!severeDone && notes.longterm) {
+        severeDone = true; healthDone = true;
+        setTimeout(() => addSevNudge(), 1200);
+      } else if (!healthDone && notes.phys_syms) {
+        healthDone = true;
+        setTimeout(() => addHealthNudge(), 800);
+      }
+    }
+  } catch (e) {
+    document.getElementById('ctyp').classList.remove('on');
+    addErr('msgs', e.message);
+  }
+
+  btn.disabled = false;
+}
+
+function setMode(m, el) {
+  chatMode = m;
+  document.querySelectorAll('.mtab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('chsub').textContent = m === 'reality'
+    ? 'Real talk — honest even when uncomfortable'
+    : 'Just listen — presence before advice';
+}
+
+// ── MIRROR ──
+const MIR_BRAIN = `Silent observer. Mirror session. Output ONLY raw JSON — no markdown, no text before or after:
+{"emotion":"core emotion","defensive":false,"red_flags":false,"rf_note":"null or what signals the user may be the difficult one","what_they_need":"what they need to feel","crack_q":"best single question to ask","tone":"emotional tone for response"}`;
+
+async function getMirBrain(hist) {
+  try {
+    const raw = await callClaude(MIR_BRAIN, hist, 350);
+    const cleaned = raw.trim().replace(/^```[\w]*\n?/, '').replace(/```$/, '').trim();
+    return JSON.parse(cleaned);
+  } catch (e) { return null; }
+}
+
+async function sendMirror() {
+  const inp = document.getElementById('miri');
+  const msg = inp.value.trim();
+  if (!msg) return;
+  inp.value = ''; inp.style.height = 'auto';
+  addMsg('mirmsgs', msg, 'user');
+  mirrorHistory.push({ role: 'user', content: msg });
+  const btn = document.getElementById('mbtn');
+  btn.disabled = true;
+  document.getElementById('mtyp').classList.add('on');
+  scrollBot('mirmsgs');
+  try {
+    const n = await getMirBrain(mirrorHistory);
+    const ctx = n
+      ? `\n\n[NOTES]: emotion: ${n.emotion}. Defensive: ${n.defensive}. Red flags: ${n.red_flags ? 'YES — ' + n.rf_note : 'no'}. Need: ${n.what_they_need}. Best question: ${n.crack_q}. Tone: ${n.tone}.`
+      : '';
+    const raw = await callClaude(VMIRROR + ctx, mirrorHistory, 280);
+    const reply = raw.trim() || 'Something got in the way — try again.';
+    mirrorHistory.push({ role: 'assistant', content: reply });
+    document.getElementById('mtyp').classList.remove('on');
+    addMsg('mirmsgs', reply, 'ai', n && n.red_flags ? 'mal' : '');
+  } catch (e) {
+    document.getElementById('mtyp').classList.remove('on');
+    addErr('mirmsgs', e.message);
+  }
+  btn.disabled = false;
+}
+
+function setMirTab(t, el) {
+  mirrorTab = t;
+  document.querySelectorAll('.mtab2').forEach(x => x.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('mirwelc').innerHTML = t === 'selfcheck'
+    ? "Asking this question is already the hardest part.<br><br>Tell me what you did. What you notice about yourself. I won't make you a monster — but I will be honest with you."
+    : "Tell me the whole story. I'll help you see the shape of it — including any parts that might surprise you.";
+  mirrorHistory = [];
+}
+
+// ── PATTERN ANALYSIS ──
+const PAT_SYS = `Pattern recognition for relationship dynamics. Identify specific psychological patterns by their clinical names. Also honestly assess if the person describing may themselves be exhibiting harmful patterns. Keep under 200 words.
+
+Format:
+**Patterns identified:**
+- **[Name]:** How it appears in this situation.
+
+**What this means:**
+2-3 sentences on the dynamic and its impact.
+
+**One thing to do today:**
+One specific concrete action. Not vague advice.`;
+
+async function doPattern() {
+  const inp = document.getElementById('pat-inp').value.trim();
+  if (!inp) return;
+  const btn = document.getElementById('pat-btn');
+  btn.disabled = true;
+  document.getElementById('pat-lt').classList.add('on');
+  document.getElementById('pat-res').classList.remove('on');
+  try {
+    const r = await callClaude(PAT_SYS, [{ role: 'user', content: 'Situation: ' + inp }], 600);
+    document.getElementById('pat-txt').innerHTML = nl2br(r);
+    document.getElementById('pat-res').classList.add('on');
+  } catch (e) {
+    document.getElementById('pat-txt').innerHTML = '<span style="color:#c8402a;">⚠️ ' + e.message + '</span>';
+    document.getElementById('pat-res').classList.add('on');
+  }
+  btn.disabled = false;
+  document.getElementById('pat-lt').classList.remove('on');
+}
+
+// ── SCRIPT GENERATOR ──
+const SCR_SYS = `Write practical response scripts for emotionally difficult relationship situations. Based on grey rock, DBT, NVC, and boundary-setting psychology. Under 200 words.
+
+Format:
+**Script 1 — [Name]:** "[Exact words to say]"
+*Why: [One sentence on why it works.]*
+
+**Script 2 — [Name]:** "[Exact words]"
+*Why: [One sentence.]*
+
+**Script 3 — [Name]:** "[Exact words]"
+*Why: [One sentence.]*
+
+**When to use which:** One sentence. Realistic words a real person could say out loud.`;
+
+async function doScript() {
+  const inp = document.getElementById('scr-inp').value.trim();
+  if (!inp) return;
+  const btn = document.getElementById('scr-btn');
+  btn.disabled = true;
+  document.getElementById('scr-lt').classList.add('on');
+  document.getElementById('scr-res').classList.remove('on');
+  try {
+    const r = await callClaude(SCR_SYS, [{ role: 'user', content: 'Situation: ' + inp }], 600);
+    document.getElementById('scr-txt').innerHTML = nl2br(r);
+    document.getElementById('scr-res').classList.add('on');
+  } catch (e) {
+    document.getElementById('scr-txt').innerHTML = '<span style="color:#c8402a;">⚠️ ' + e.message + '</span>';
+    document.getElementById('scr-res').classList.add('on');
+  }
+  btn.disabled = false;
+  document.getElementById('scr-lt').classList.remove('on');
+}
+
+// ── HEALTH ──
+function swHTab(t, el) {
+  document.querySelectorAll('.htab').forEach(x => x.classList.remove('active'));
+  document.querySelectorAll('.htp').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('htp-' + t).classList.add('active');
+}
+
+const TDATA = {
+  critical: { cls: 'cr2', title: 'Please reach out right now', body: 'What you are feeling is real and it matters. You do not have to face this alone.', actions: ['📞 iCall: 9152987821', '📞 Vandrevala 24/7: 1860-2662-345', '📞 Emergency: 112', '💬 Tell a trusted person where you are right now'] },
+  physical: { cls: 'cr2', title: 'Call emergency services now', body: 'Severe physical symptoms need emergency medical assessment immediately.', actions: ['📞 Ambulance: 108 (India) · 999 (UK) · 911 (US)', '📋 Say: I have been under severe stress and am having physical symptoms', '💊 Bring any medications you take'] },
+  urgent: { cls: 'am2', title: 'This deserves professional attention — soon', body: 'Symptoms disrupting daily life are your body asking for help. You deserve actual support.', actions: ['🗓️ Book a GP appointment this week — mention stress and physical symptoms', '🧠 Ask for trauma-informed therapy: EMDR, TF-CBT, or somatic', '📋 Use Symptom checker to build a record before your appointment', '🤝 YourDOST, Amaha, or Lissun for therapy access in India'] },
+  mental: { cls: 'am2', title: 'Your mind is asking for help', body: 'Weeks or months of declining mental health is a medical situation — not a personal failing.', actions: ['🧠 Find a therapist specialising in trauma or relationship abuse', '📱 Wysa for immediate support while you wait', '📋 Use the Symptom log — patterns matter when you see a doctor', '🗣️ Relational stress is enough to say — you do not have to explain everything'] },
+  watching: { cls: 'gr2', title: 'Good — you are paying attention', body: 'Noticing early signals before they escalate is exactly right.', actions: ['📋 Use the Symptom log to track what you notice over weeks', '😴 Sleep is the first thing stress degrades — protect it', '🗣️ Even one therapy session to check in is worth it', '🗺️ Explore the Body map to understand your specific symptoms'] },
+  info: { cls: 'gr2', title: 'Understanding is the first step', body: 'Knowing how emotional abuse affects the body helps you recognise it, name it, and take it seriously.', actions: ['🗺️ Start with the Body map tab', '🔍 Use Pattern analysis to understand relationship dynamics', '📚 The Body Keeps the Score by van der Kolk — the definitive text', '💬 The chat can help you work through what you are learning'] }
+};
+
+function selTriage(el, lv) {
+  document.querySelectorAll('.tc').forEach(c => c.classList.remove('sel'));
+  el.classList.add('sel');
+  const t = TDATA[lv];
+  if (!t) return;
+  document.getElementById('tr-result').innerHTML = `<div class="tres ${t.cls}"><div class="trt">${t.title}</div><p style="margin-bottom:9px;">${t.body}</p>${t.actions.map(a => `<div style="font-size:12.5px;padding:3px 0;">${a}</div>`).join('')}</div>`;
+}
+
+function selDur(el, v) { document.querySelectorAll('.dc').forEach(c => c.classList.remove('active')); el.classList.add('active'); selDuration = v; }
+function togSym(el, s) { el.classList.toggle('active'); selSymptoms.includes(s) ? selSymptoms = selSymptoms.filter(x => x !== s) : selSymptoms.push(s); }
+function updSev(v) { sevVal = parseInt(v); const l = ['', 'Barely noticeable', 'Mild', 'Mild', 'Moderate', 'Moderate', 'Significant', 'Significant', 'Severe', 'Severe', 'Debilitating']; document.getElementById('svv').textContent = v + ' / 10 — ' + (l[v] || ''); }
+
+const HEALTH_SYS = `You are Unmute's health signal analyser for people experiencing chronic emotional or psychological abuse. You are NOT a doctor.
+
+FORMAT exactly:
+**What your body is telling you:**
+2-3 warm, clear sentences connecting symptoms to the stress response.
+
+**Signals identified:**
+- **[Pattern name]:** [Plain-language physiology — 1-2 sentences.] *Urgency: Early / Moderate / High*
+
+**What to do right now:**
+- [Action 1]
+- [Action 2]
+- [Action 3]
+
+**What to tell your doctor:**
+Specific usable language they can actually say.
+
+**When to seek urgent care:**
+One honest sentence.
+
+Under 300 words. Warm but grounding. Never catastrophise. Never minimise. What they are experiencing is real and has causes.`;
+
+async function runCheck() {
+  if (!selSymptoms.length) { alert('Select at least one symptom area.'); return; }
+  const notes = document.getElementById('sym-notes').value.trim();
+  const prompt = `Duration: ${selDuration}. Areas: ${selSymptoms.join(', ')}. Severity: ${sevVal}/10. Notes: ${notes || 'none'}.`;
+  const btn = document.getElementById('chkbtn');
+  btn.disabled = true;
+  document.getElementById('chk-lt').classList.add('on');
+  document.getElementById('ai-rep').style.display = 'none';
+  try {
+    const r = await callClaude(HEALTH_SYS, [{ role: 'user', content: prompt }], 1100);
+    document.getElementById('ai-rep-body').innerHTML = nl2br(r);
+    document.getElementById('ai-rep').style.display = 'block';
+  } catch (e) {
+    document.getElementById('ai-rep-body').innerHTML = '<span style="color:#c8402a;">⚠️ ' + e.message + '</span>';
+    document.getElementById('ai-rep').style.display = 'block';
+  }
+  btn.disabled = false;
+  document.getElementById('chk-lt').classList.remove('on');
+}
+
+function saveLog() {
+  if (!selSymptoms.length) { alert('Select symptom areas first.'); return; }
+  const e = { date: new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }), time: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }), dur: selDuration, syms: [...selSymptoms], sev: sevVal, notes: document.getElementById('sym-notes').value.trim() };
+  symLog.unshift(e); localStorage.setItem('um_log', JSON.stringify(symLog)); renderLog(); alert('Saved to log.');
+}
+
+function renderLog() {
+  const c = document.getElementById('log-entries');
+  if (!symLog.length) { c.innerHTML = '<div class="le-empty"><div class="le-ei">📋</div><div style="font-size:13px;">No entries yet.<br><span style="font-size:11.5px;">Use Symptom check and tap Save to log.</span></div></div>'; return; }
+  c.innerHTML = symLog.map((e, i) => { const dc = e.sev <= 3 ? 'dll' : e.sev <= 6 ? 'dlm' : 'dlh'; return `<div class="le"><div class="led ${dc}"></div><div class="leb"><strong>${e.date}</strong> at ${e.time}<br><span style="color:#5a5a54;font-size:11.5px;">${e.dur} · severity ${e.sev}/10</span><br><span style="font-size:12px;">${e.syms.join(', ')}</span>${e.notes ? `<br><span style="font-size:11.5px;color:#9a9a90;font-style:italic;">${e.notes}</span>` : ''}</div><button class="ledl" onclick="delLog(${i})">×</button></div>`; }).join('');
+}
+
+function delLog(i) { symLog.splice(i, 1); localStorage.setItem('um_log', JSON.stringify(symLog)); renderLog(); }
+function clearLog() { if (confirm('Clear all entries?')) { symLog = []; localStorage.setItem('um_log', '[]'); renderLog(); } }
+
+function showZone(z) {
+  document.querySelectorAll('.bz').forEach(b => b.classList.remove('bza'));
+  document.querySelectorAll('.zi').forEach(x => x.classList.remove('zs'));
+  const bz = document.getElementById('bz-' + z); if (bz) bz.classList.add('bza');
+  const zi = document.getElementById('zi-' + z);
+  if (zi) { zi.classList.add('zs'); document.getElementById('zi-default').classList.remove('zs'); }
+}
+
+renderLog();
+</script>
+</body>
+</html>
